@@ -1,0 +1,91 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Study Sessions{% endblock %}
+
+{% block content %}
+<h2>Study Sessions</h2>
+<ul>
+    {% for session in study_sessions %}
+    <li>
+        <span>{{ session.task.name }}: </span>
+        <input type="number" id="duration_input_{{ session.id }}" placeholder="Minutes" min="1">
+        <span id="time_left_{{ session.id }}" class="time-left"></span>
+        <button onclick="startTimer({{ session.id }})">Start</button>
+        <button onclick="pauseTimer({{ session.id }})">Pause</button>
+        <button onclick="resumeTimer({{ session.id }})">Resume</button>
+    </li>
+    {% endfor %}
+</ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timers = {};
+        const endTimes = {};
+        const remainingTimes = {};
+
+        function updateTime(id) {
+            const now = new Date().getTime();
+            const endTime = endTimes[id];
+            const timeLeft = endTime - now;
+
+            if (timeLeft > 0) {
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('time_left_' + id).innerText = `${minutes}m ${seconds}s left`;
+            } else {
+                document.getElementById('time_left_' + id).innerText = 'Session Ended';
+                clearInterval(timers[id]);
+            }
+        }
+
+        function startTimer(id) {
+            const durationInput = document.getElementById('duration_input_' + id);
+            const duration = parseInt(durationInput.value);
+
+            if (!duration || duration <= 0) {
+                alert('Please enter a valid duration in minutes.');
+                return;
+            }
+
+            const now = new Date().getTime();
+            const endTime = now + duration * 60 * 1000;
+            endTimes[id] = endTime;
+            remainingTimes[id] = duration * 60 * 1000;
+
+            if (!timers[id]) {
+                timers[id] = setInterval(function() {
+                    updateTime(id);
+                }, 1000);
+            }
+        }
+
+        function pauseTimer(id) {
+            if (timers[id]) {
+                clearInterval(timers[id]);
+                timers[id] = null;
+
+                const now = new Date().getTime();
+                remainingTimes[id] = endTimes[id] - now;
+            }
+        }
+
+        function resumeTimer(id) {
+            if (!timers[id]) {
+                const now = new Date().getTime();
+                const endTime = now + remainingTimes[id];
+                endTimes[id] = endTime;
+
+                timers[id] = setInterval(function() {
+                    updateTime(id);
+                }, 1000);
+            }
+        }
+
+        window.startTimer = startTimer;
+        window.pauseTimer = pauseTimer;
+        window.resumeTimer = resumeTimer;
+    });
+</script>
+<a href="{% url 'study-session-create' %}">Create Study Session</a>
+{% endblock %}

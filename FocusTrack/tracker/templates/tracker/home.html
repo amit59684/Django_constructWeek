@@ -1,0 +1,10 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Welcome to FocusTrack</h2>
+<p>This is a study session tracking and productivity app.</p>
+<a href="{% url 'task-list' %}">View Tasks</a>
+<a href="{% url 'study-session-list' %}">View Study Sessions</a>
+{% endblock %}

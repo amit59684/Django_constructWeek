@@ -1,0 +1,13 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<h2>Tasks</h2>
+<ul>
+    {% for task in object_list %}
+        <li><a href="{% url 'task-detail' task.pk %}">{{ task.name }}</a></li>
+    {% endfor %}
+</ul>
+<a href="{% url 'task-create' %}">Add New Task</a>
+{% endblock %}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}FocusTrack{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'tracker/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>FocusTrack</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'task-list' %}">Tasks</a></li>
+                <li><a href="{% url 'study-session-list' %}">Study Sessions</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
